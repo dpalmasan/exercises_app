@@ -1,0 +1,9 @@
+node_modules
+migrations
+__pycache__
+execises_app_environment
+*xlsx
+LeerTutorial.txt
+*db
+*exe
+windows_envvars

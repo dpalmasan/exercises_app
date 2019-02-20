@@ -1,0 +1,3 @@
+set FLASK_ENV=development
+set DATABASE_URL=sqlite:////Users.../exercises_app/question_api.db
+set JWT_SECRET_KEY=hhgaghhgsdhdhdd
