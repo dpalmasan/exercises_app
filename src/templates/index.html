@@ -9,7 +9,7 @@
 
         <!-- CSS links will be here -->
         <!-- Bootstrap 4 CSS and custom CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom.css') }}" />
 
     </head>
@@ -49,6 +49,8 @@
         </div>
     </div>
 
+    <div id="exercises"></div>
+
 </main>
 <!-- /container -->
 
@@ -57,7 +59,6 @@
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
 <!-- jquery scripts will be here -->
 <script>
 // jQuery codes
@@ -189,7 +190,6 @@ $(document).ready(function(){
 
         // convert object to json string
         var form_data=JSON.stringify(update_account_form_obj);
-        console.log(form_data);
         // send data to api here
         // submit form data to api
         $.ajax({
@@ -286,36 +286,72 @@ $(document).ready(function(){
 
         // validate jwt to verify access
         var jwt = getCookie('jwt');
+
+        // Success STARTS here
         $.ajax({
-            url: "api/v1/validate/",
-            type : "POST",
-            contentType : 'application/json',
+            url: 'api/v1/routines/',
+            type: 'GET',
+            contentType: 'application/json',
+            headers: { 'api-token': jwt },
             dataType: 'json',
-            data : JSON.stringify({ jwt:jwt }),
-            success : function(result) {
-                // home page html will be here
-                // if valid, show homepage
-                var html = `
-                    <div class="card">
-                        <div class="card-header">Welcome to Home!</div>
+            success: function(result) {
+              // home page html will be here
+              // if valid, show homepage
+              routine = result['0']; // I need to check what is going on
+              var html = `
+                  <div class="card">
+                      <div class="card-header">Welcome to Exercises App!</div>
+                      <div class="card-body">
+                          <h5 class="card-title">Here is a list of available routines for you!</h5>
+                          <p class="card-text">You won't be able to access the home and account pages if you are not logged in.</p>
+                      </div>
+                  </div><br>
+                  `;
+
+              var row_string = '<div class="row">'
+              var end_row_string = '</div><br>'
+              var exercise_grid = '';
+              var put_row = false;
+              var put_end_row = false;
+              $.each(routine.exercises, function(index, exercise) {
+                  put_row = (index) % 3 == 0;
+
+                  if (put_row) {
+                    exercise_grid += row_string;
+                  }
+
+                  exercise_grid += `
+                    <div class="col-md-4">
+                      <div class="card" >
                         <div class="card-body">
-                            <h5 class="card-title">You are logged in.</h5>
-                            <p class="card-text">You won't be able to access the home and account pages if you are not logged in.</p>
+                          <h5 class="card-title">`+ exercise.name + `</h5>
+                          <h6 class="card-subtitle text-muted">Subtitle</h6>
+                          <a href="` + exercise.url + `" target="_blank" class="card-link">Link to Video</a>
                         </div>
+                      </div>
                     </div>
-                    `;
+                  `
 
-                $('#content').html(html);
-                showLoggedInMenu();
+                  put_end_row = (index + 1) % 3 == 0;
+                  if (put_end_row) {
+                    exercise_grid += end_row_string;
+                  }
+              });
+              if (!put_end_row || routine.exercises.length < 3 && routine.exercises.length > 0) {
+                exercise_grid += end_row_string;
+              }
+
+              html += exercise_grid;
+              $('#content').html(html);
+              showLoggedInMenu();
             },
-
-            // errors will be handled here
-            // show error message to user
-            error: function(xhr, resp, text){
-              showLoginPage();
-              $('#response').html("<div class='alert alert-danger'>Please login to access the home page.</div>");
+            error: function(xhr, resp, text) {
+                showLoginPage();
+                $('#response').html("<div class='alert alert-danger'>Please login to access the home page.</div>");
             }
+
         });
+        // Success ENDS here
     }
 
     // getCookie() will be here

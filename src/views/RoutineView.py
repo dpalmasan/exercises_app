@@ -7,7 +7,6 @@ from flask import Blueprint
 from ..models.RoutineModel import RoutineModel
 from ..models.RoutineModel import RoutineSchema
 from ..models.ExerciseModel import ExerciseModel
-from ..models.ExerciseModel import ExerciseSchema
 from ..shared.Authentication import Auth
 
 routine_api = Blueprint('routines', __name__)
@@ -25,8 +24,10 @@ def create():
     if error:
         return custom_response(error, 400)
 
+    # This is a workaround, to bypass exercise required fields
+    # Under the assumption that to add exercises, they must exist in the DB
+    exercises = req_data.get('exercises_names', {})
     exercises_object = []
-    exercises = data.get('exercises', {})
     for exercise in exercises:
         exercise_in_db = ExerciseModel.get_exercise_by_name(
             exercise.get("name")
@@ -46,12 +47,7 @@ def create():
     routine.exercises = exercises_object
     routine.save()
 
-    # I am not sure if this is the correct response we want to provide
-    # I just copied the code from UserView
-    routine_data = routine_schema.dump(routine).data
-    token = Auth.generate_token(routine_data.get('id'))
-
-    return custom_response({'jwt_token': token}, 201)
+    return custom_response({'message': 'Routine created!'}, 201)
 
 
 @routine_api.route('/', methods=['GET'])
