@@ -234,7 +234,6 @@ $(document).ready(function(){
             success: function(result) {
               // home page html will be here
               // if valid, show homepage
-              routine = result['0']; // I need to check what is going on
               var html = `
                   <div class="card">
                       <div class="card-header">Welcome to Exercises App!</div>
@@ -250,7 +249,7 @@ $(document).ready(function(){
               var exercise_grid = '';
               var put_row = false;
               var put_end_row = false;
-              $.each(routine.exercises, function(index, exercise) {
+              $.each(result, function(index, routine) {
                   put_row = (index) % 3 == 0;
 
                   if (put_row) {
@@ -261,25 +260,31 @@ $(document).ready(function(){
                     <div class="col-md-4">
                       <div class="card" >
                         <div class="card-body">
-                          <h5 class="card-title">`+ exercise.name + `</h5>
-                          <h6 class="card-subtitle text-muted">Subtitle</h6>
-                          <a href="` + exercise.url + `" target="_blank" class="card-link">Link to Video</a>
+                          <h5 class="card-title">`+ routine.title + `</h5>
+                          <p class="card-text">` + routine.description + `</p>
+                          <button id="` + routine.id + `" class="btn btn-primary">Check Routine</button>
                         </div>
                       </div>
                     </div>
                   `
-
                   put_end_row = (index + 1) % 3 == 0;
                   if (put_end_row) {
                     exercise_grid += end_row_string;
                   }
               });
-              if (!put_end_row || routine.exercises.length < 3 && routine.exercises.length > 0) {
+
+              if (!put_end_row || result.length < 3 && result.length > 0) {
                 exercise_grid += end_row_string;
               }
 
               html += exercise_grid;
+
               $('#content').html(html);
+
+              $.each(result, function(index, routine) {
+                  document.getElementById(routine.id.toString()).addEventListener("click", showRoutine);
+              });
+
               showLoggedInMenu();
             },
             error: function(xhr, resp, text) {
@@ -289,6 +294,43 @@ $(document).ready(function(){
 
         });
         // Success ENDS here
+    }
+
+    function showRoutine() {
+      var jwt = getCookie('jwt');
+
+      // Success STARTS here
+      $.ajax({
+          url: 'api/v1/routines/' + this.id,
+          type: 'GET',
+          contentType: 'application/json',
+          headers: { 'api-token': jwt },
+          dataType: 'json',
+          success: function(result) {
+            // home page html will be here
+            // if valid, show homepage
+            var html = '<h2>' + result.title + ': ' + result.exercises.length + ' exercises</h2><ul class="list-group">';
+
+            $.each(result.exercises, function(index, exercise) {
+                html += `<li class="list-group-item d-flex justify-content-between align-items-center">` + exercise.name + `
+                   <a href="` + exercise.url + `" target="_blank" class="btn btn-info" role="button" aria-pressed="true"><i class="fab fa-youtube"></i></a>
+                </li>`
+            });
+
+            html += '</ul>';
+            $.fancybox.open({
+              src: html,
+              type: 'html',
+              smallBtn: false
+            });
+          },
+          error: function(xhr, resp, text) {
+              showLoginPage();
+              $('#response').html("<div class='alert alert-danger'>Please login to access the home page.</div>");
+          }
+
+      });
+
     }
 
     // getCookie() will be here
