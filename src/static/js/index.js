@@ -439,14 +439,14 @@ $(document).ready(function(){
               }
 
               startDate = getNsecondsFromNow(60);
-              pauseDate = startDate;
+              pauseDate = 0;
               $clock.countdown(startDate, function(event) {
                 $(".carousel-item.active .card-body .lead").html(event.strftime('%M:%S'));
               });
 
               $('#btn-reset').click(function() {
                 startDate = getNsecondsFromNow(60);
-                pauseDate = startDate;
+                pauseDate = 0;
                 $clock.countdown(startDate);
               });
 
@@ -458,7 +458,7 @@ $(document).ready(function(){
               $('#btn-resume').click(function() {
                 var timedelta = new Date().getTime() - pauseDate.getTime(); // Elapsed time since the pause
                 startDate = new Date(startDate.getTime() + timedelta);
-                pauseDate = startDate;
+                pauseDate = 0;
                 $clock.countdown(startDate);
               });
 
@@ -473,7 +473,10 @@ $(document).ready(function(){
                     interval: false
                   }).on('slid.bs.carousel', function (event) {
                     startDate = getNsecondsFromNow(60);
-                    $clock.countdown(startDate);
+                    pauseDate = 0;
+                    $clock.countdown(startDate, function(event) {
+                      $(".carousel-item.active .card-body .lead").html(event.strftime('%M:%S'));
+                    });
                 })
               })
 
