@@ -14,6 +14,13 @@ Basically I am creating an exercises app with the following features:
 * Keep track of progress
 * Submit custom exercises routines
 
+# Branching Model Considered
+
+Since this is a learning project, I am also learning git in the process. Since
+Git branching is a basic yet powerful feature, I am learning it. I am also in
+the attempt of following a good branching model, since this helps development.
+For this particular project I am following [this one](https://nvie.com/posts/a-successful-git-branching-model/ "A successful git branching model").
+
 ## 2019-02-19
 
 First commit. For now, the app only allows user sign-up and logging. I have
