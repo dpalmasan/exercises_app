@@ -395,26 +395,31 @@ $(document).ready(function(){
               $('[data-toggle="tooltip"]').tooltip();
 
               // 15 days from now!
-              function get15dayFromNow() {
-                return new Date(new Date().valueOf() + 15 * 24 * 60 * 60 * 1000);
+              function getNsecondsFromNow(N) {
+                return new Date(new Date().valueOf() + N * 1000);
               }
 
               var $clock = $('#clock');
 
-              $clock.countdown(get15dayFromNow(), function(event) {
-                $(this).html(event.strftime('%D days %H:%M:%S'));
+              startDate = getNsecondsFromNow(60);
+              $clock.countdown(startDate, function(event) {
+                $(this).html(event.strftime('%M:%S'));
               });
 
               $('#btn-reset').click(function() {
-                $clock.countdown(get15dayFromNow());
+                startDate = getNsecondsFromNow(60);
+                $clock.countdown(startDate);
               });
 
               $('#btn-pause').click(function() {
-                $clock.countdown('pause');
+                $clock.countdown('stop');
+                pauseDate = new Date();
               });
 
               $('#btn-resume').click(function() {
-                $clock.countdown('resume');
+                var timedelta = new Date().getTime() - pauseDate.getTime(); // Elapsed time since the pause
+                startDate = new Date(startDate.getTime() + timedelta);
+                $clock.countdown(startDate);
               });
 
             });
