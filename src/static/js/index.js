@@ -309,15 +309,33 @@ $(document).ready(function(){
           success: function(result) {
             // home page html will be here
             // if valid, show homepage
-            var html = '<h2>' + result.title + ': ' + result.exercises.length + ' exercises</h2><ul class="list-group">';
+            var html = `
+              <div>
+                <div class="row">
+                  <div class="col-md-12">
+                    <h2>` + result.title + `: ` + result.exercises.length + ` exercises</h2>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12">
+                    <ul class="list-group">`;
 
             $.each(result.exercises, function(index, exercise) {
-                html += `<li class="list-group-item d-flex justify-content-between align-items-center">` + exercise.name + `
+                html += `
+                  <li class="list-group-item d-flex justify-content-between align-items-center">` + exercise.name + `
                    <a href="` + exercise.url + `" target="_blank" class="btn btn-info" role="button" aria-pressed="true"><i class="fab fa-youtube"></i></a>
-                </li>`
+                  </li>`
             });
 
-            html += '</ul>';
+            html += `</ul></div></div><br>
+              <div class="row">
+                <div class="col-md-12 text-center">
+                  <button id="test" class="btn btn-block btn-success">Go!</button>
+                </div>
+              </div>
+            </div>
+            `;
+            console.log(html);
             $.fancybox.open({
               src: html,
               type: 'html',
