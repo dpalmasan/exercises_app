@@ -335,11 +335,79 @@ $(document).ready(function(){
               </div>
             </div>
             `;
-            console.log(html);
+
             $.fancybox.open({
               src: html,
               type: 'html',
               smallBtn: false
+            });
+
+            document.getElementById("test").addEventListener("click", function (){
+              var countdown_exercise = `
+                <div class="container">
+                  <div class="row">
+                    <div class="col-md-12 text-center">
+                      <h1>Bootstrap starter template</h1>
+                      <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
+                      <div class="card" data-toggle="tooltip" data-placement="top" title="Beautifull, insn't it?">
+                        <div class="card-body">
+                          <div class="lead" id="clock"></div>
+                        </div>
+                      </div><br>
+
+                      <button type="button" class="btn btn-primary" id="btn-reset">
+                        <i class="fa fa-redo"></i>
+                        Reset countdown
+                      </button>
+
+                      <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-light" id="btn-pause">
+                          <input type="radio" name="options" id="option2" autocomplete="off">
+                          <i class="fa fa-pause"></i>
+                          Pause
+                        </label>
+
+                        <label class="btn btn-light active" id="btn-resume">
+                          <input type="radio" name="options" id="option2" autocomplete="off" checked>
+                          <i class="fa fa-play"></i>
+                          Resume
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              `;
+              $.fancybox.open({
+                src: countdown_exercise,
+                type: 'html',
+                smallBtn: false,
+              });
+
+              $('[data-toggle="tooltip"]').tooltip();
+
+              // 15 days from now!
+              function get15dayFromNow() {
+                return new Date(new Date().valueOf() + 15 * 24 * 60 * 60 * 1000);
+              }
+
+              var $clock = $('#clock');
+
+              $clock.countdown(get15dayFromNow(), function(event) {
+                $(this).html(event.strftime('%D days %H:%M:%S'));
+              });
+
+              $('#btn-reset').click(function() {
+                $clock.countdown(get15dayFromNow());
+              });
+
+              $('#btn-pause').click(function() {
+                $clock.countdown('pause');
+              });
+
+              $('#btn-resume').click(function() {
+                $clock.countdown('resume');
+              });
+
             });
           },
           error: function(xhr, resp, text) {
