@@ -330,7 +330,7 @@ $(document).ready(function(){
             html += `</ul></div></div><br>
               <div class="row">
                 <div class="col-md-12 text-center">
-                  <button id="test" class="btn btn-block btn-success">Go!</button>
+                  <button id="start_routine" class="btn btn-block btn-success">Go!</button>
                 </div>
               </div>
             </div>
@@ -342,50 +342,85 @@ $(document).ready(function(){
               smallBtn: false
             });
 
-            document.getElementById("test").addEventListener("click", function (){
+            document.getElementById("start_routine").addEventListener("click", function (){
               var countdown_exercise = `
                 <div class="container">
-                  <div class="row">
-                    <div class="col-md-12 text-center">
-                      <h1>Bootstrap starter template</h1>
-                      <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-md-4">
-                    </div>
-                    <div class="col-md-4 text-center">
-                      <div class="card" data-toggle="tooltip" data-placement="top">
-                        <div class="card-body">
-                          <div class="lead" id="clock"></div>
+                  <div id="exercises_slides" class="carousel slide" data-ride="carousel" interval="false">
+                    <ol class="carousel-indicators">`
+
+              $.each(result.exercises, function(index, exercise) {
+                  countdown_exercise += `
+                      <li data-target="#exercises_slides" data-slide-to="` + exercise.id + `"` + (index == 0 ? `class="active"` : "") +
+                      `</li>`
+              });
+              countdown_exercise += `
+                    </ol>
+                    <div class="carousel-inner">`
+              $.each(result.exercises, function(index, exercise) {
+                  countdown_exercise += `
+                      <div class="carousel-item` + (index == 0 ? ' active' : '') +`">
+                        <div class="row">
+                          <div class="col-md-12 text-center">
+                            <h1>` + exercise.name + `</h1>
+                          </div>
                         </div>
-                      </div><br>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-md-12 text-center">
-                      <button type="button" class="btn btn-primary" id="btn-reset">
-                        <i class="fa fa-redo"></i>
-                        Reset countdown
-                      </button>
-
-                      <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                        <label class="btn btn-light" id="btn-pause">
-                          <input type="radio" name="options" id="option2" autocomplete="off">
-                          <i class="fa fa-pause"></i>
-                          Pause
-                        </label>
-
-                        <label class="btn btn-light active" id="btn-resume">
-                          <input type="radio" name="options" id="option2" autocomplete="off" checked>
-                          <i class="fa fa-play"></i>
-                          Resume
-                        </label>
+                        <div class="row">
+                          <div class="col-md-12 text-center">
+                            <p class="lead">` + 'repetitions = 30 &emsp;' + `<a href="` + exercise.url + `" target="_blank" class="btn btn-info" role="button"><i class="fab fa-youtube"></i></a></p>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-4"></div>
+                          <div class="col-md-4 text-center">
+                            <div class="card" data-toggle="tooltip" data-placement="top">
+                              <div class="card-body">
+                                <div class="lead" id="` + exercise.id + `"></div>
+                              </div>
+                            </div><br>
+                          </div>
+                        </div>
                       </div>
+                  `
+
+              });
+              countdown_exercise += `
+              </div>
+              <a class="carousel-control-prev" href="#exercises_slides" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+              </a>
+              <a class="carousel-control-next" href="#exercises_slides" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+              </a>
+              </div>
+                <!-- Here are the buttons to control countdown -->
+                <div class="row">
+                  <div class="col-md-12 text-center">
+                    <button type="button" class="btn btn-primary" id="btn-reset">
+                      <i class="fa fa-redo"></i>
+                      Reset countdown
+                    </button>
+
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                      <label class="btn btn-light" id="btn-pause">
+                        <input type="radio" name="options" id="option2" autocomplete="off">
+                        <i class="fa fa-pause"></i>
+                        Pause
+                      </label>
+
+                      <label class="btn btn-light active" id="btn-resume">
+                        <input type="radio" name="options" id="option2" autocomplete="off" checked>
+                        <i class="fa fa-play"></i>
+                        Resume
+                      </label>
                     </div>
                   </div>
                 </div>
-              `;
+                <!-- Here end buttons that control countdown -->
+              </div>
+              `
+              console.log(countdown_exercise);
               $.fancybox.open({
                 src: countdown_exercise,
                 type: 'html',
@@ -394,16 +429,18 @@ $(document).ready(function(){
 
               $('[data-toggle="tooltip"]').tooltip();
 
+              exercise_id = $(".carousel-item.active .card-body .lead").attr('id');
+
+              var $clock = $($(".carousel-item.active .card-body .lead"));
+
               // 15 days from now!
               function getNsecondsFromNow(N) {
                 return new Date(new Date().valueOf() + N * 1000);
               }
 
-              var $clock = $('#clock');
-
               startDate = getNsecondsFromNow(60);
               $clock.countdown(startDate, function(event) {
-                $(this).html(event.strftime('%M:%S'));
+                $(".carousel-item.active .card-body .lead").html(event.strftime('%M:%S'));
               });
 
               $('#btn-reset').click(function() {
@@ -422,6 +459,16 @@ $(document).ready(function(){
                 $clock.countdown(startDate);
               });
 
+
+              $(function(){
+                var carouselEl = $('.carousel');
+                // var carouselItems = carouselEl.find('.carousel-item');
+                carouselEl.carousel({
+                  interval: false
+                }).on('slid.bs.carousel', function (event) {
+                })
+              })
+
             });
           },
           error: function(xhr, resp, text) {
@@ -432,6 +479,7 @@ $(document).ready(function(){
       });
 
     }
+
 
     // getCookie() will be here
     // get or read cookie
