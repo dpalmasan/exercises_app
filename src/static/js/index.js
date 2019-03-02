@@ -349,12 +349,21 @@ $(document).ready(function(){
                     <div class="col-md-12 text-center">
                       <h1>Bootstrap starter template</h1>
                       <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
-                      <div class="card" data-toggle="tooltip" data-placement="top" title="Beautifull, insn't it?">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4">
+                    </div>
+                    <div class="col-md-4 text-center">
+                      <div class="card" data-toggle="tooltip" data-placement="top">
                         <div class="card-body">
                           <div class="lead" id="clock"></div>
                         </div>
                       </div><br>
-
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12 text-center">
                       <button type="button" class="btn btn-primary" id="btn-reset">
                         <i class="fa fa-redo"></i>
                         Reset countdown
